@@ -96,6 +96,7 @@ for(int i=0; i<size; i++){
 	Signal2.in_arr[i][0] =  sin(2*pi*wfreq1*((float)i)/(sfreq*(float)size)) + sin(2*pi*wfreq2*i/(sfreq*(float)size));
 	printf("%f \t %f \n",Signal2.in_arr[i][0], Signal2.in_arr[i][1]);
 }
+
 ///////////////////////////// Signal1 /////////////////////////////////////////////////////
 hilbert(Signal1.in_arr, Signal1.anal_arr, Signal1.anal_arrc, size);
 printf("Hilbert transform and its conjugate \n");
@@ -103,28 +104,32 @@ printf("REAL \t Imaginary\t REALc \t ImaginaryC \n");
 for(int i=0; i<size;i++)
 	printf("%f \t %f \t %f \t %f \n",Signal1.anal_arr[i][0], Signal1.anal_arr[i][1],Signal1.anal_arrc[i][0],Signal1.anal_arrc[i][1]);
 ////////////////////////////// Signal 2 ///////////////////////////////////////////////////////
+
 hilbert(Signal2.in_arr, Signal2.anal_arr, Signal2.anal_arrc, size);
 printf("Hilbert Transform and its conjugate \n");
 printf("REAL \t Imaginary \t REALc \t ImaginaryC \n");
 for(int i=0; i<size; i++)
 	printf("%f \t %f \t %f \t %f \n",Signal2.anal_arr[i][0], Signal2.anal_arr[i][1], Signal2.anal_arrc[i][0],Signal2.anal_arrc[i][1]);
+
 ///////////////////////////// Correlational Matrix ////////////////////////////////////////////
 
 fftw_complex **EoU;
 EoU = (fftw_complex**) fftw_malloc(sizeof(fftw_complex*)*size);
-*EoU = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*size);
+
+//previously a bad implementation of malloc was used here, making the program random
+EoU[0] = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*size);
+EoU[1] = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*size);
 
 for(int i =0; i<size; i++){
 
-	EoU[0][0][0] = (Signal1.anal_arr[i][0]*Signal1.anal_arrc[i][0] - Signal1.anal_arr[i][1]*Signal1.anal_arrc[i][1])/size + EoU[0][0][0];
-	EoU[0][0][1] = (Signal1.anal_arr[i][0]*Signal1.anal_arrc[i][1] + Signal1.anal_arr[i][1]*Signal1.anal_arrc[i][0])/size + EoU[0][0][1];
-	EoU[0][1][0] = (Signal1.anal_arr[i][0]*Signal2.anal_arrc[i][0] - Signal1.anal_arr[i][1]*Signal2.anal_arrc[i][1])/size + EoU[0][1][0];
-	EoU[0][1][1] = (Signal1.anal_arr[i][0]*Signal2.anal_arrc[i][1] + Signal1.anal_arr[i][1]*Signal2.anal_arrc[i][0])/size + EoU[0][1][1];
-	EoU[1][0][0] = (Signal2.anal_arr[i][0]*Signal1.anal_arrc[i][0] - Signal2.anal_arr[i][1]*Signal1.anal_arrc[i][1])/size + EoU[1][0][0];
-	EoU[1][0][1] = (Signal2.anal_arr[i][0]*Signal1.anal_arrc[i][1] + Signal2.anal_arr[i][1]*Signal1.anal_arrc[i][0])/size + EoU[1][0][1];
-	EoU[1][1][0] = (Signal2.anal_arr[i][0]*Signal2.anal_arrc[i][0] - Signal2.anal_arr[i][1]*Signal2.anal_arrc[i][1])/size + EoU[1][1][0];
-	EoU[1][1][1] = (Signal2.anal_arr[i][0]*Signal2.anal_arrc[i][1] + Signal2.anal_arr[i][1]*Signal2.anal_arrc[i][0])/size + EoU[1][1][1];
-
+ 	EoU[0][0][0] += (Signal1.anal_arr[i][0]*Signal1.anal_arrc[i][0] - Signal1.anal_arr[i][1]*Signal1.anal_arrc[i][1])/size;
+ 	EoU[0][0][1] += (Signal1.anal_arr[i][0]*Signal1.anal_arrc[i][1] + Signal1.anal_arr[i][1]*Signal1.anal_arrc[i][0])/size; 
+ 	EoU[0][1][0] += (Signal1.anal_arr[i][0]*Signal2.anal_arrc[i][0] - Signal1.anal_arr[i][1]*Signal2.anal_arrc[i][1])/size;
+ 	EoU[0][1][1] += (Signal1.anal_arr[i][0]*Signal2.anal_arrc[i][1] + Signal1.anal_arr[i][1]*Signal2.anal_arrc[i][0])/size;
+	EoU[1][0][0] += (Signal2.anal_arr[i][0]*Signal1.anal_arrc[i][0] - Signal2.anal_arr[i][1]*Signal1.anal_arrc[i][1])/size;
+ 	EoU[1][0][1] += (Signal2.anal_arr[i][0]*Signal1.anal_arrc[i][1] + Signal2.anal_arr[i][1]*Signal1.anal_arrc[i][0])/size;
+ 	EoU[1][1][0] += (Signal2.anal_arr[i][0]*Signal2.anal_arrc[i][0] - Signal2.anal_arr[i][1]*Signal2.anal_arrc[i][1])/size;
+ 	EoU[1][1][1] += (Signal2.anal_arr[i][0]*Signal2.anal_arrc[i][1] + Signal2.anal_arr[i][1]*Signal2.anal_arrc[i][0])/size;
 }
 printf("EoU is \n %f  + i%f \t %f + i%f \n %f + i%f \t %f + i%f \n",EoU[0][0][0],EoU[0][0][1],EoU[0][1][0],EoU[0][1][1],EoU[1][0][0], EoU[1][0][1],EoU[1][1][0],EoU[1][1][1]);
 free(Signal1.in_arr);
@@ -146,17 +151,17 @@ EoU1(1,0).imag() = EoU[1][0][1];
 EoU1(1,1).imag() = EoU[1][1][1];
 
 cout << EoU1;
-ComplexEigenSolver<MatrixXcf> eigensolver(EoU1);
-cout << "The eigenvalues of A are:" << endl << eigensolver.eigenvalues() << endl;
-cout << "The eigenvectors of A are:" << endl << eigensolver.eigenvectors() << endl;
-MatrixXcf *eigenvectors = const_cast<MatrixXcf*> (&(eigensolver.eigenvectors()));
-VectorXcf *eigenvalues = const_cast<VectorXcf*>(&(eigensolver.eigenvalues()));
-int Signal = 2;
-int order = 1;
-Matrix2cf V;
-neoEigen(&V,eigenvectors, eigenvalues, Signal, order);
-cout << V << "\n";
-float altitude, azimuth;
-MUSICclassifier(&V, &altitude, &azimuth);
+// ComplexEigenSolver<MatrixXcf> eigensolver(EoU1);
+// cout << "The eigenvalues of A are:" << endl << eigensolver.eigenvalues() << endl;
+// cout << "The eigenvectors of A are:" << endl << eigensolver.eigenvectors() << endl;
+// MatrixXcf *eigenvectors = const_cast<MatrixXcf*> (&(eigensolver.eigenvectors()));
+// VectorXcf *eigenvalues = const_cast<VectorXcf*>(&(eigensolver.eigenvalues()));
+// int Signal = 2;
+// int order = 1;
+// Matrix2cf V;
+// neoEigen(&V,eigenvectors, eigenvalues, Signal, order);
+// cout << V << "\n";
+// float altitude, azimuth;
+// MUSICclassifier(&V, &altitude, &azimuth);
 return 0;
 }

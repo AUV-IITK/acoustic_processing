@@ -1,9 +1,0 @@
-[bbauv-sbRIO]
-bbauv-sbRIO = "192.168.0.150"
-
-[My Computer]
-My Computer = "192.168.0.107"
-
-[NI-cRIO-9074-01329D89]
-NI-cRIO-9074-01329D89 = "192.168.0.151"
-

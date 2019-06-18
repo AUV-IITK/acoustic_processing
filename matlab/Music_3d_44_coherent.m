@@ -38,32 +38,32 @@ gamma_d3_1 = gamma * dist_d3_1;
 gamma_d4_1 = gamma * dist_d4_1;
 gamma_vector_1 = [exp(gamma_d4_1);exp(gamma_d3_1);exp(gamma_d2_1);exp(gamma_d1_1)];
 signal_1 =  amp_1*svm_1.*gamma_vector_1*wave_1;
-noise_1 = (0.1)*awgn(signal_1,amp_1);
-U_1 = signal_1 + noise_1;
+#noise_1 = (0.1)*awgn(signal_1,amp_1);
+U_1 = signal_1;# + noise_1;
 %%%%%%%%%%%%%%%% Signal 2
 wave_2 = sin(2*pi*(t*w_freq_1+0.47 )); %basis of coherent signal
 amp_2 = 0.1;
 theta_cs = 52;
 phi_cs = 48;
 signal_2 = amp_2*svm_3d_44_coherent(theta_cs,phi_cs,w_freq,gamma,velocity,d,D)*wave_2;
-noise_2 = (.1)*awgn(signal_2,amp_2);
-U_2 = signal_2 + noise_2;
+#noise_2 = (.1)*awgn(signal_2,amp_2);
+U_2 = signal_2;# + noise_2;
 %%%%%%%%%%%%%%%% Signal 3
 wave_3 = sin(2*pi*(t*w_freq_2 + 0.569 )); %basis of coherent signal
 amp_3 = 0.5;
 theta_ncs = 18;
 phi_ncs = 178;
 signal_3 = amp_3*svm_3d_44_coherent(theta_ncs,phi_ncs,w_freq,gamma,velocity,d,D)*wave_3;
-noise_3 = (.1)*awgn(signal_3,amp_3);
-U_3 = signal_3 + noise_3;
+#noise_3 = (.1)*awgn(signal_3,amp_3);
+U_3 = signal_3;# + noise_3;
 %%%%%%%%%%%%%%%% Signal 4
 wave_4 = sin(2*pi*(t*w_freq_3 + 0.789 )); %basis of coherent signal
 amp_4 = 0.5;
 theta_ncs = 78;
 phi_ncs = 46;
 signal_4 = amp_4*svm_3d_44_coherent(theta_ncs,phi_ncs,w_freq,gamma,velocity,d,D)*wave_4;
-noise_4 = (.1)*awgn(signal_4,amp_4);
-U_4 = signal_4 + noise_4;
+#noise_4 = (.1)*awgn(signal_4,amp_4);
+U_4 = signal_4;# + noise_4;
 %%%%%%%%%%%%%%%% Simulation 
 U = U_1 + U_2 + U_3 + U_4;
 %%%%%%%%%%%%%%%     MUSIC    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

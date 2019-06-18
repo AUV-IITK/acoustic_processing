@@ -39,7 +39,7 @@ gamma_d4_1 = gamma * dist_d4_1;
 gamma_vector_1 = [exp(gamma_d4_1);exp(gamma_d3_1);exp(gamma_d2_1);exp(gamma_d1_1)];
 signal_1 =  amp_1*svm_1.*gamma_vector_1*wave_1;
 #noise_1 = (0.1)*awgn(signal_1,amp_1);
-U_1 = signal_1;# + noise_1;
+U_1 = signal_1;#   + noise_1;
 %%%%%%%%%%%%%%%% Signal 2
 wave_2 = sin(2*pi*(t*w_freq_1+0.47 )); %basis of coherent signal
 amp_2 = 0.1;
